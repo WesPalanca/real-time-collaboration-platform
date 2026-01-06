@@ -4,6 +4,8 @@ import cors from 'cors';
 import { errorHandler } from './middleware/errorHandler.js';
 import { API_PREFIX, MONGO_URI } from './config.js';
 import authRoutes from './routers/auth.router.js';
+import roomRoutes from './routers/room.router.js';
+import messageRoutes from './routers/message.router.js';
 
 
 const app = express();
@@ -18,7 +20,9 @@ mongoose.connect(MONGO_URI, {
 .then(() => console.log('connected to mongodb'))
 .catch((error) => console.error(`Error: ${error}`))
 // routes
-app.use(API_PREFIX, authRoutes);
+app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/room`, roomRoutes);
+app.use(`${API_PREFIX}/message`, messageRoutes);
 
 
 
