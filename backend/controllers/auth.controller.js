@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import AppError from "../utils/AppError.js";
 import log from "../utils/log.js";
 import { JWT_SECRET, TOKEN_EXPIRATION } from "../config.js";
-import { registerSchema, logInSchema } from "../validation.js/auth.validation.js";
+import { registerSchema, logInSchema } from "../validation/auth.validation.js";
 
 export const register = async (req, res) => {
     try {

@@ -1,6 +1,6 @@
 import Message from "../models/message.model.js";
 import Room from '../models/room.model.js';
-import { sendRoomMessageSchema, sendDirectMessageSchema } from "../validation.js/message.validation.js";
+import { sendRoomMessageSchema, sendDirectMessageSchema } from "../validation/message.validation.js";
 import log from "../utils/log.js";
 import User from "../models/user.model.js";
 
