@@ -5,8 +5,8 @@ const messageSchema = mongoose.Schema({
     to: { type: mongoose.Types.ObjectId, ref: 'User' },
     roomId: { type: mongoose.Types.ObjectId, ref: 'Room' },
     message: { type: String, required: true },
-    messageDeletedBySender: { type: boolean, default: false },
-    messageDeletedByReceiver: { type: boolean, default: false }
+    messageDeletedBySender: { type: Boolean, default: false },
+    messageDeletedByReceiver: { type: Boolean, default: false }
 
 }, { 
     timestamps: true
