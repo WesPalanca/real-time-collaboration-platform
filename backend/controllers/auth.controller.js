@@ -55,7 +55,16 @@ export const logIn = async (req, res) => {
             throw new AppError("Unauthorized", 401, 'UNAUTHORIZED');
         }
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION});
-        return res.status(200).json({ success: true, message: 'User successfully logged in', token})
+        log('INFO', 'User logged in succesfully');
+        return res.status(200).json({ 
+            success: true,
+            message: 'User successfully logged in',
+            token,
+            user: { 
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }});
     }
     catch(err){
         log('ERROR', 'internal server error', { message: err.message});

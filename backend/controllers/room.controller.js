@@ -20,6 +20,20 @@ export const createRoom = async (req, res) => {
     }
     catch (err) {
         log('ERROR', 'Internal server error');
-        return res.status(500).json({ success: false, message: 'Internal server error' } );
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const getRooms = async (req, res) => {
+    try {
+        log('INFO', 'Fetching rooms');
+        const userId = req.user.userId;
+        const rooms = await Room.find({ members: userId });
+        log('INFO', 'Successfully fetched rooms')
+        return res.status(200).json({ success: true, message: 'Successfully fetched rooms', rooms })
+    }
+    catch (err) {
+        log('ERROR', 'Internal server error');
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }

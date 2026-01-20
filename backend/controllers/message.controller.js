@@ -44,3 +44,17 @@ export const sendDirectMessage = async (req, res) => {
         return res.status(500).json({ success: false, message: 'internal server error'})
     }
 }
+
+export const getRoomMessages = async (req, res) => {
+    try {
+        log('INFO', 'Getting room messages');
+        const { roomId } = req.params;
+        const messages = await Message.find({ roomId: roomId });
+        log('INFO', 'Successfully fetched room messages');
+        return res.status(200).json({ success: true, message: 'Successfully got messages', messages});
+    }
+    catch(err) {
+        log('ERROR', 'internal server error', { message: err.message});
+        return res.status(500).json({ success: false, message: 'internal server error'})
+    }
+}
