@@ -1,28 +1,25 @@
-import { resumeToPipeableStream } from "react-dom/server";
-import Message from "../models/message.model.js";
-import Room from "../models/room.model.js";
 import { createRoomMessage } from "../services/message.service.js";
-import { sendRoomMessageSchema } from "../validation/message.validation";
+import { sendRoomMessageSchema } from "../validation/message.validation.js";
 
 const registerMessageHandlers = (io, socket) => {
-    socket.on('room-message', async (payload) => {
+    socket.on('room:message', async (payload) => {
         try {
             const res = sendRoomMessageSchema.safeParse(payload);
             if (!res.success) {
                 return socket.emit('error', { type: 'VALIDATION_ERROR', issues: res.error.issues });
             }
-            const message = createRoomMessage({ 
+            const message = await createRoomMessage({ 
                 roomId: res.data.roomId,
                 userId: socket.user.userId,
                 message: res.data.message
             });
 
-            io.to(res.data.roomId).emit('room-message', {
+            io.to(res.data.roomId).emit('room:message', {
                 _id: message._id,
                 roomId: message.roomId,
                 from: message.from,
                 message: message.message,
-                createdAt: newMessage.createdAt
+                createdAt: message.createdAt
             });
         }
         catch(err) {
@@ -30,3 +27,5 @@ const registerMessageHandlers = (io, socket) => {
         }
     })
 }
+
+export default registerMessageHandlers;
