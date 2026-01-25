@@ -20,7 +20,7 @@ export default function RoomList({ rooms, loading }) {
           <div
             key={room._id}
             className="room-card"
-            onClick={() => navigate(`/room/${room._id}`)}
+            onClick={() => navigate(`/rooms/${room._id}`)}
           >
             <h3>{room.name}</h3>
             <p className="room-members">{room.members?.length || 0} members</p>
