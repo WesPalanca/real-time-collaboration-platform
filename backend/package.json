@@ -18,6 +18,10 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.2",
     "socket.io": "^4.8.3",
+    "yjs": "^13.6.29",
     "zod": "^4.3.4"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97"
   }
 }
