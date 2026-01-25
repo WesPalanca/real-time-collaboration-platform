@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
 import RoomPage from './pages/RoomPage';
+import DocumentPage from './pages/DocumentPage';
 import './styles/global.css';
 
 export default function App() {
@@ -61,10 +62,20 @@ export default function App() {
           }
         />
         <Route
-          path="/room/:roomId"
+          path="rooms/:roomId"
           element={
             user ? (
               <RoomPage user={user} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/documents/:documentId"
+          element={
+            user ? (
+              <DocumentPage user={user} onLogout={handleLogout} />
             ) : (
               <Navigate to="/login" replace />
             )

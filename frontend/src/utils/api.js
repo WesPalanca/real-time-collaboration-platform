@@ -26,13 +26,20 @@ export const authAPI = {
 // Room endpoints
 export const roomAPI = {
   createRoom: (roomName) =>
-    api.post('room', { roomName }),
+    api.post('rooms', { roomName }),
   getRooms: () =>
-    api.get('room'),
+    api.get('rooms'),
 };
 
 // Message endpoints
 export const messageAPI = {
   getRoomMessages: (roomId) =>
-    api.get(`message/${roomId}`),
+    api.get(`messages/${roomId}`),
 };
+
+export const documentAPI = {
+  createDocument: (title) =>
+    api.post('documents', { title }),
+  getDocuments: () =>
+    api.get('documents')
+}

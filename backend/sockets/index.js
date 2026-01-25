@@ -1,4 +1,5 @@
 import socketAuth from "./auth.socket.js";
+import registerDocumentHandlers from "./document.socket.js";
 import registerMessageHandlers from "./message.socket.js";
 import registerRoomHandlers from "./room.socket.js";
 
@@ -11,6 +12,7 @@ const initSockets = (io) => {
         // socket functions
         registerRoomHandlers(io, socket);
         registerMessageHandlers(io, socket);
+        registerDocumentHandlers(io, socket);
 
         socket.on('disconnect', () => {
             console.log(`Client disconnected: ${socket.id}`);
