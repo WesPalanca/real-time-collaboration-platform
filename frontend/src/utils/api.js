@@ -29,6 +29,8 @@ export const roomAPI = {
     api.post('rooms', { roomName }),
   getRooms: () =>
     api.get('rooms'),
+  addUserToRoom: (roomId, recipientId) =>
+    api.post(`rooms/${roomId}/members`, { recipientId })
 };
 
 // Message endpoints
@@ -41,5 +43,7 @@ export const documentAPI = {
   createDocument: (title) =>
     api.post('documents', { title }),
   getDocuments: () =>
-    api.get('documents')
+    api.get('documents'),
+  addUserToDocument: (documentId, recipientId) =>
+    api.post(`documents/${documentId}/editors`, { recipientId })
 }

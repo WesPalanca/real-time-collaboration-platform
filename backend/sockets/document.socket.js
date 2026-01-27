@@ -1,5 +1,6 @@
 import * as Y from 'yjs';
 import Document from '../models/document.model.js';
+import { addUserToEntity } from '../services/user.service.js';
 import log from '../utils/log.js';
 
 const docs = new Map(); 
@@ -93,6 +94,27 @@ const registerDocumentHandlers = (io, socket) => {
     socket.on('doc:leave', (documentId) => {
         socket.leave(documentId);
         log('INFO', `Socket ${socket.id} left document ${documentId}`);
+    });
+
+    // Real-time user addition to document
+    socket.on('doc:add-editor', async (data) => {
+        try {
+            log('INFO', 'Socket: Adding editor to document');
+            const { documentId, recipientId } = data;
+            
+            const update = await addUserToEntity(Document, documentId, recipientId, 'editors');
+            
+            // Broadcast to all clients viewing this document
+            io.to(documentId).emit('doc:editor-added', { 
+                documentId, 
+                editors: update.editors 
+            });
+            
+            log('INFO', 'Socket: Successfully added editor to document');
+        } catch (err) {
+            log('ERROR', 'Socket: Failed to add editor to document', err);
+            socket.emit('doc:error', { message: 'Failed to add editor' });
+        }
     });
 
     socket.on('disconnect', async () => {

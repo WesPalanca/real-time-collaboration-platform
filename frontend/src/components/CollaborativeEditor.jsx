@@ -172,7 +172,7 @@ export default function CollaborativeEditor({ documentId }) {
   }, [documentId]);
 
   /**
-   * Handle user input in the contenteditable div
+   * Handle user input in the content editable div
    * This fires whenever the user types, pastes, or deletes text
    */
   const handleInput = (e) => {

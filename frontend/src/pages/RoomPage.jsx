@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { messageAPI } from '../utils/api';
+import { messageAPI, roomAPI } from '../utils/api';
 import { getSocket } from '../utils/socket';
 import Header from '../components/Header';
 import MessageList from '../components/MessageList';
@@ -13,6 +13,11 @@ export default function RoomPage({ user, onLogout }) {
   const [messages, setMessages] = useState([]);
   const [roomName, setRoomName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [recipientId, setRecipientId] = useState('');
+  const [addingMember, setAddingMember] = useState(false);
+  const [addMemberError, setAddMemberError] = useState(null);
+  const [addMemberSuccess, setAddMemberSuccess] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -42,12 +47,34 @@ export default function RoomPage({ user, onLogout }) {
       }
     });
 
+    socket.on('room:error', (err) => {
+      setAddMemberError(err.message);
+    });
+
     return () => {
       socket.emit('room:leave', { roomId });
       socket.off('room:message');
       socket.off('error');
+      socket.off('room:error');
     };
   }, [roomId, navigate]);
+
+  // Separate listener setup for real-time member additions that persists
+  useEffect(() => {
+    const socket = getSocket();
+
+    // Listen for real-time member additions and update immediately
+    socket.on('room:user-added', (data) => {
+      setMembers(data.members);
+      setAddMemberSuccess('Member added successfully');
+      // Clear success message after 3 seconds
+      setTimeout(() => setAddMemberSuccess(null), 3000);
+    });
+
+    return () => {
+      socket.off('room:user-added');
+    };
+  }, []);
 
   const fetchMessages = async () => {
     try {
@@ -69,6 +96,34 @@ export default function RoomPage({ user, onLogout }) {
     }
   };
 
+  const handleAddMember = async (e) => {
+    e.preventDefault();
+
+    if (!recipientId.trim()) {
+      setAddMemberError('Please enter a user ID');
+      return;
+    }
+
+    try {
+      setAddingMember(true);
+      setAddMemberError(null);
+      setAddMemberSuccess(null);
+
+      // Emit socket event for real-time user addition
+      const socket = getSocket();
+      socket.emit('room:add-user', { 
+        roomId, 
+        recipientId: recipientId.trim() 
+      });
+
+      setRecipientId('');
+    } catch (err) {
+      setAddMemberError('Failed to add member');
+    } finally {
+      setAddingMember(false);
+    }
+  };
+
   return (
     <div className="room-page">
       <Header user={user} onLogout={onLogout} />
@@ -78,7 +133,33 @@ export default function RoomPage({ user, onLogout }) {
             ← Back
           </button>
           <h1>{roomName}</h1>
+          <form onSubmit={handleAddMember} className="add-member-form">
+            <input
+              type="text"
+              placeholder="Enter user ID to invite..."
+              value={recipientId}
+              onChange={(e) => setRecipientId(e.target.value)}
+              disabled={addingMember}
+              className="member-input"
+            />
+            <button
+              type="submit"
+              disabled={addingMember || !recipientId.trim()}
+              className="btn-add-member"
+            >
+              {addingMember ? 'Adding...' : 'Add Member'}
+            </button>
+          </form>
         </div>
+
+        {/* Add-member feedback and updated members list */}
+        {addMemberError && <div className="error-message">{addMemberError}</div>}
+        {addMemberSuccess && <div className="success-message">{addMemberSuccess}</div>}
+        {members.length > 0 && (
+          <div className="room-members">
+            Members: {members.join(', ')}
+          </div>
+        )}
 
         <div className="room-content">
           <MessageList messages={messages} currentUserId={user?.userId} />
