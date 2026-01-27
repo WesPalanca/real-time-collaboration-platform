@@ -19,7 +19,7 @@ export default function MessageList({ messages, currentUserId }) {
         return (
           <div key={i} className={`message ${isOwn ? 'own' : 'other'}`}>
             <div className="message-header">
-              <strong>{msg.from}</strong>
+              <strong>{msg.from.username}</strong>
               <span className="message-time">
                 {new Date(msg.createdAt).toLocaleTimeString()}
               </span>

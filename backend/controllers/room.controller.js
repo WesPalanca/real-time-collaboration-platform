@@ -9,14 +9,14 @@ export const createRoom = async (req, res) => {
         log('INFO', 'Creating room', { roomName: roomName, members: members });
         const creator = req.user.userId;
         members.push(creator)
-        const newRoom = new Room({
+        const newRoom = await Room.create({
             name: roomName,
             members: members,
             createdBy: creator
-        })
-        await newRoom.save();
+        });
+        const populateRoom = await Room.findById(newRoom._id).populate('members', 'username');
         log('INFO', 'Successfully created room');
-        return res.status(201).json({ success: true, message: 'Successfully created room', room: newRoom });
+        return res.status(201).json({ success: true, message: 'Successfully created room', room: populateRoom });
 
     }
     catch (err) {
@@ -29,7 +29,7 @@ export const getRooms = async (req, res) => {
     try {
         log('INFO', 'Fetching rooms');
         const userId = req.user.userId;
-        const rooms = await Room.find({ members: userId });
+        const rooms = await Room.find({ members: userId }).populate('members', 'username');
         log('INFO', 'Successfully fetched rooms')
         return res.status(200).json({ success: true, message: 'Successfully fetched rooms', rooms })
     }

@@ -4,7 +4,7 @@ import log from "../utils/log.js";
 
 const registerRoomHandlers = (io, socket) => {
     socket.on('room:join', async ({ roomId }) => {
-        const room = await Room.findById(roomId);
+        const room = await Room.findById(roomId).populate('members', 'username');
         if (!room) {
             return socket.emit('error', { type: 'ROOM_NOT_FOUND'});
         }
@@ -25,10 +25,11 @@ const registerRoomHandlers = (io, socket) => {
             
             const update = await addUserToEntity(Room, roomId, recipientId, 'members');
             
+            const populatedRoom = await Room.findById(roomId).populate('members', 'username');
             // Broadcast to all clients in the room
             io.to(roomId).emit('room:user-added', { 
                 roomId, 
-                members: update.members 
+                members: populatedRoom.members 
             });
             
             log('INFO', 'Socket: Successfully added user to room');

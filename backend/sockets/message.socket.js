@@ -1,3 +1,4 @@
+import Message from "../models/message.model.js";
 import { createRoomMessage } from "../services/message.service.js";
 import { sendRoomMessageSchema } from "../validation/message.validation.js";
 
@@ -14,12 +15,10 @@ const registerMessageHandlers = (io, socket) => {
                 message: res.data.message
             });
 
+            const populatedMessage = await Message.findById(message._id).populate('from', 'username');
+
             io.to(res.data.roomId).emit('room:message', {
-                _id: message._id,
-                roomId: message.roomId,
-                from: message.from,
-                message: message.message,
-                createdAt: message.createdAt
+                message: populatedMessage
             });
         }
         catch(err) {

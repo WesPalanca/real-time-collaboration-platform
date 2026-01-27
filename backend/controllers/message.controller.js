@@ -2,7 +2,6 @@ import Message from "../models/message.model.js";
 import Room from '../models/room.model.js';
 import { sendRoomMessageSchema, sendDirectMessageSchema } from "../validation/message.validation.js";
 import log from "../utils/log.js";
-import User from "../models/user.model.js";
 import { createDirectMessage, createRoomMessage } from "../services/message.service.js";
 export const sendRoomMessage = async (req, res) => {
     try {
@@ -49,9 +48,10 @@ export const getRoomMessages = async (req, res) => {
     try {
         log('INFO', 'Getting room messages');
         const { roomId } = req.params;
-        const messages = await Message.find({ roomId: roomId });
+        const messages = await Message.find({ roomId: roomId }).populate('from', 'username');
+        const room = await Room.findById(roomId).populate('members', 'username');
         log('INFO', 'Successfully fetched room messages');
-        return res.status(200).json({ success: true, message: 'Successfully got messages', messages});
+        return res.status(200).json({ success: true, message: 'Successfully got messages', messages, members: room.members});
     }
     catch(err) {
         log('ERROR', 'internal server error', { message: err.message});

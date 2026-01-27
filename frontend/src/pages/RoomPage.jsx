@@ -37,7 +37,7 @@ export default function RoomPage({ user, onLogout }) {
 
     // Listen for new messages
     socket.on('room:message', (data) => {
-      setMessages((prev) => [...prev, data]);
+      setMessages((prev) => [...prev, data.message]);
     });
 
     socket.on('error', (err) => {
@@ -81,6 +81,7 @@ export default function RoomPage({ user, onLogout }) {
       const res = await messageAPI.getRoomMessages(roomId);
       setMessages(res.data.messages || []);
       setRoomName(res.data.roomName || 'Room');
+      setMembers(res.data.members || []);
     } catch (err) {
       console.error('Failed to fetch messages:', err);
     }
@@ -157,7 +158,7 @@ export default function RoomPage({ user, onLogout }) {
         {addMemberSuccess && <div className="success-message">{addMemberSuccess}</div>}
         {members.length > 0 && (
           <div className="room-members">
-            Members: {members.join(', ')}
+            Members: {members.map(m => m.username).join(', ')}
           </div>
         )}
 
